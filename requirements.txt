@@ -3,5 +3,5 @@ Flask-CORS==3.0.10
 numpy==1.24.0
 Pillow==8.2.0
 easyocr==1.4.1
-PyMuPDF==1.23.7  
-torch==2.0.1+cpu  
+PyMuPDF==1.23.8  
+torch==2.0.0 
