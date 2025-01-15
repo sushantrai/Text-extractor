@@ -1,0 +1,349 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sushant's assignment</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+      }
+      .file-upload {
+        margin-bottom: 20px;
+      }
+      .file-upload input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        display: none;
+      }
+      .drag-drop-area {
+        padding: 20px;
+        border: 2px solid #007bff;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+      .drag-drop-area.hover {
+        background-color: #e6f7ff;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+      .btn:hover {
+        background-color: #0056b3;
+      }
+      .result {
+        margin-top: 20px;
+      }
+      .image-container img {
+        width: 100%;
+        max-width: 500px;
+        margin: 10px 0;
+      }
+      .loader {
+        display: none;
+        text-align: center;
+        margin: 50px auto;
+      }
+      .loader img {
+        width: 100px;
+        height: 100px;
+      }
+
+      .spinner_qM83 {
+        animation: spinner_8HQG 1.05s infinite;
+      }
+      .spinner_oXPr {
+        animation-delay: 0.1s;
+      }
+      .spinner_ZTLf {
+        animation-delay: 0.2s;
+      }
+      @keyframes spinner_8HQG {
+        0%,
+        57.14% {
+          animation-timing-function: cubic-bezier(0.33, 0.66, 0.66, 1);
+          transform: translate(0);
+        }
+        28.57% {
+          animation-timing-function: cubic-bezier(0.33, 0, 0.66, 0.33);
+          transform: translateY(-6px);
+        }
+        100% {
+          transform: translate(0);
+        }
+      }
+      #footer {
+        margin-top: 50px 0px;
+        display: flex;
+        gap: 20px;
+      }
+      #note {
+        color: red;
+      }
+      #social {
+        display: flex;
+        justify-content: flex-start;
+      }
+      #social a:hover {
+        svg {
+          fill: #007bff; /* Change to blue when hovered */
+        }
+      }
+      #git {
+        margin-top: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Text Extraction Tool</h1>
+      <div class="file-upload">
+        <!-- Hidden file input element -->
+        <input
+          type="file"
+          id="fileInput"
+          accept=".pdf, .jpg, .jpeg, .png, .bmp, .tiff"
+          onchange="updateFileName()"
+        />
+        <!-- Drag-and-Drop area -->
+        <div
+          class="drag-drop-area"
+          id="dragDropArea"
+          onclick="triggerFileInput()"
+          ondrop="handleDrop(event)"
+          ondragover="handleDragOver(event)"
+          ondragleave="handleDragLeave(event)"
+        >
+          Drag & Drop a file here or click to select
+        </div>
+      </div>
+      <button class="btn" onclick="submitFile()">Extract Text</button>
+      <div class="loader" id="loader">
+        <svg width="80" height="80" viewBox="0 0 24 24">
+          <circle class="spinner_qM83" cx="4" cy="12" r="3" />
+          <circle class="spinner_qM83 spinner_oXPr" cx="12" cy="12" r="3" />
+          <circle class="spinner_qM83 spinner_ZTLf" cx="20" cy="12" r="3" />
+        </svg>
+
+        <p>Processing...</p>
+      </div>
+      <div class="result" id="result">
+        <h2 class="heading">Extracted Text:</h2>
+        <p id="extractedText"></p>
+        <div class="image-container" id="imageContainer"></div>
+      </div>
+
+      <footer>
+        <div id="footer">
+          <div id="note">
+            Note: It supports only English. PDFs with selectable text provide
+            better results.
+          </div>
+          <div id="social">
+            <a href="https://www.linkedin.com/in/sushant-kumar-ba6746170/"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="38"
+                height="38"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M36.5,6h-25C8.468,6,6,8.468,6,11.5v25c0,3.032,2.468,5.5,5.5,5.5h25c3.032,0,5.5-2.468,5.5-5.5v-25	C42,8.468,39.532,6,36.5,6z M18,34c0,0.553-0.447,1-1,1h-3c-0.553,0-1-0.447-1-1V21c0-0.553,0.447-1,1-1h3c0.553,0,1,0.447,1,1V34z M15.5,18c-1.381,0-2.5-1.119-2.5-2.5c0-1.381,1.119-2.5,2.5-2.5s2.5,1.119,2.5,2.5C18,16.881,16.881,18,15.5,18z M35,34	c0,0.553-0.447,1-1,1h-3c-0.553,0-1-0.447-1-1v-7.5c0-1.379-1.121-2.5-2.5-2.5S25,25.121,25,26.5V34c0,0.553-0.447,1-1,1h-3	c-0.553,0-1-0.447-1-1V21c0-0.553,0.447-1,1-1h3c0.553,0,1,0.447,1,1v0.541C26.063,20.586,27.462,20,29,20c3.309,0,6,2.691,6,6V34z"
+                ></path>
+              </svg>
+            </a>
+            <a href="" id="git"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="33"
+                height="33"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M17.791,46.836C18.502,46.53,19,45.823,19,45v-5.4c0-0.197,0.016-0.402,0.041-0.61C19.027,38.994,19.014,38.997,19,39 c0,0-3,0-3.6,0c-1.5,0-2.8-0.6-3.4-1.8c-0.7-1.3-1-3.5-2.8-4.7C8.9,32.3,9.1,32,9.7,32c0.6,0.1,1.9,0.9,2.7,2c0.9,1.1,1.8,2,3.4,2 c2.487,0,3.82-0.125,4.622-0.555C21.356,34.056,22.649,33,24,33v-0.025c-5.668-0.182-9.289-2.066-10.975-4.975 c-3.665,0.042-6.856,0.405-8.677,0.707c-0.058-0.327-0.108-0.656-0.151-0.987c1.797-0.296,4.843-0.647,8.345-0.714 c-0.112-0.276-0.209-0.559-0.291-0.849c-3.511-0.178-6.541-0.039-8.187,0.097c-0.02-0.332-0.047-0.663-0.051-0.999 c1.649-0.135,4.597-0.27,8.018-0.111c-0.079-0.5-0.13-1.011-0.13-1.543c0-1.7,0.6-3.5,1.7-5c-0.5-1.7-1.2-5.3,0.2-6.6 c2.7,0,4.6,1.3,5.5,2.1C21,13.4,22.9,13,25,13s4,0.4,5.6,1.1c0.9-0.8,2.8-2.1,5.5-2.1c1.5,1.4,0.7,5,0.2,6.6c1.1,1.5,1.7,3.2,1.6,5 c0,0.484-0.045,0.951-0.11,1.409c3.499-0.172,6.527-0.034,8.204,0.102c-0.002,0.337-0.033,0.666-0.051,0.999 c-1.671-0.138-4.775-0.28-8.359-0.089c-0.089,0.336-0.197,0.663-0.325,0.98c3.546,0.046,6.665,0.389,8.548,0.689 c-0.043,0.332-0.093,0.661-0.151,0.987c-1.912-0.306-5.171-0.664-8.879-0.682C35.112,30.873,31.557,32.75,26,32.969V33 c2.6,0,5,3.9,5,6.6V45c0,0.823,0.498,1.53,1.209,1.836C41.37,43.804,48,35.164,48,25C48,12.318,37.683,2,25,2S2,12.318,2,25 C2,35.164,8.63,43.804,17.791,46.836z"
+                ></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // Hide Extracted Text Data Heading initially
+      const extractedDataHeading = document.querySelector(".heading");
+      extractedDataHeading.style.display = "none";
+
+      // Trigger file input when user clicks on the drag area
+      function triggerFileInput() {
+        document.getElementById("fileInput").click();
+      }
+
+      // Handle drag over event
+      function handleDragOver(event) {
+        event.preventDefault();
+        const dragDropArea = document.getElementById("dragDropArea");
+        dragDropArea.classList.add("hover");
+      }
+
+      // Handle drag leave event
+      function handleDragLeave(event) {
+        event.preventDefault();
+        const dragDropArea = document.getElementById("dragDropArea");
+        dragDropArea.classList.remove("hover");
+      }
+
+      // Handle drop event
+      function handleDrop(event) {
+        event.preventDefault();
+        const fileInput = document.getElementById("fileInput");
+        const dragDropArea = document.getElementById("dragDropArea");
+
+        // Get the dropped file
+        const file = event.dataTransfer.files[0];
+
+        if (file) {
+          // Validate file type before accepting it
+          const isValid = validateFileType(file);
+          if (isValid) {
+            // Update file input and show the file name
+            fileInput.files = event.dataTransfer.files;
+            dragDropArea.textContent = file.name;
+          } else {
+            dragDropArea.textContent = "Unsupported file type.";
+            alert("Unsupported file type. Please upload a valid file");
+          }
+        }
+      }
+
+      // Update the file name in the drop area when a file is selected
+      function updateFileName() {
+        const fileInput = document.getElementById("fileInput");
+        const dragDropArea = document.getElementById("dragDropArea");
+
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const isValid = validateFileType(file);
+          if (isValid) {
+            dragDropArea.textContent = file.name;
+          } else {
+            dragDropArea.textContent = "Unsupported file type.";
+            alert("Unsupported file type. Please upload a valid file ");
+          }
+        }
+      }
+
+      // Validate file type
+      function validateFileType(file) {
+        const supportedTypes = ["pdf", "jpg", "jpeg", "png", "bmp", "tiff"];
+        const fileExtension = file.name.split(".").pop().toLowerCase();
+        return supportedTypes.includes(fileExtension);
+      }
+
+      // Submit the file to the backend
+      async function submitFile() {
+        const fileInput = document.getElementById("fileInput");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          alert("Please upload a file.");
+          return;
+        }
+
+        // Validate file type before proceeding
+        const isValid = validateFileType(file);
+        if (!isValid) {
+          alert(
+            "Unsupported file type. Please upload a valid file (.pdf, .jpg, .jpeg, .png, .bmp, .tiff)."
+          );
+          return;
+        }
+
+        // Clear previous results
+        const extractedText = document.getElementById("extractedText");
+        extractedText.innerText = ""; // Clear the extracted text
+        const imageContainer = document.getElementById("imageContainer");
+        imageContainer.innerHTML = ""; // Clear any previous images
+
+        // Hide Extracted Text Data Heading when submitting new file
+        extractedDataHeading.style.display = "none";
+
+        // Show loader
+        const loader = document.getElementById("loader");
+        loader.style.display = "block"; // Show loader
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+          // Send the file to the backend
+          const response = await fetch("/extract-text", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          // Hide loader after receiving response
+          loader.style.display = "none";
+
+          // Show Extracted Text Data Heading only if text was extracted
+          if (data.text) {
+            extractedDataHeading.style.display = "block"; // Show heading if text is found
+            extractedText.innerText = data.text;
+          } else {
+            extractedDataHeading.style.display = "none"; // Hide heading if no text
+            extractedText.innerText = "Failed to extract text.";
+          }
+
+          // If the backend also provides images, display them
+          if (data.images) {
+            data.images.forEach((imgData) => {
+              const imgElement = document.createElement("img");
+              imgElement.src = imgData;
+              imageContainer.appendChild(imgElement);
+            });
+          }
+
+          // Clear the file input and drag-drop area after file is processed
+          fileInput.value = ""; // Reset the file input
+          const dragDropArea = document.getElementById("dragDropArea");
+          dragDropArea.textContent =
+            "Drag & Drop a file here or click to select"; // Reset the drag-drop area text
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          loader.style.display = "none"; // Hide loader on error
+          extractedDataHeading.style.display = "none"; // Ensure heading stays hidden on error
+          alert("An error occurred while extracting text. Please try again.");
+        }
+      }
+    </script>
+  </body>
+</html>
