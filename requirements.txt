@@ -5,4 +5,4 @@ Pillow==8.2.0
 easyocr==1.4.1
 PyMuPDF==1.23.8  
 torch==2.0.0 
-gunicorn==<appropriate_version>
+gunicorn==20.1.0
