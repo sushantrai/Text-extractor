@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os
 from extractor import extract_text_auto
-
 app = Flask(__name__)
 CORS(app)
 
@@ -38,4 +37,4 @@ def extract_text():
         return jsonify({"error": "Failed to extract text"}), 500
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)), debug=True)
+    app.run(debug=True)
