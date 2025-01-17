@@ -45,7 +45,7 @@ Connecting with Frontend-end
 Development of Frontend
 
 
-• I made sure the frontend takes care of matching all the given requirements and is userfriendly.
+• I made sure the frontend takes care of matching all the given requirements and is user friendly.
 
 
 • Here we implemented Drag and drop and selection of file.
